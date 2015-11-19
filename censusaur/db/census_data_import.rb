@@ -7,17 +7,21 @@ class CensusDataImport
     batch_size = batch_size.to_i
     rows = []
     batch_counter = 1
+    db_records_count_start = CensusData.count
+    csv_rows = IO.readlines(filename).size
     CSV.foreach(filename, headers: true, skip_blanks: true, header_converters: :symbol) do |row|
       unless batch_counter == batch_limit.to_i
         rows << row
         if rows.size == batch_size
-          puts "hello"
           self.load(rows)
           rows = []
           batch_counter += 1
         end
       end
     end
+    db_records_count_start_end = CensusData.count
+    new_records = db_records_count_start_end - db_records_count_start
+    puts "Imported #{ new_records } new records (Total: #{ db_records_count_start_end }). #{ new_records } of #{ csv_rows - 1 } lines. #{ csv_rows - new_records - 1 } lines missing!"
   end
 
   def self.load(rows)
@@ -107,7 +111,7 @@ class CensusDataImport
              )"
         connection.execute(sql)
         i += 1
-        # puts i # uncomment to debug
+        # puts i # uncomment to debug batches
       end
     end # CSV.foreach
   end # self.load
