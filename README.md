@@ -21,13 +21,13 @@ Notes re each task are below. I look forward to meeting with you!
   - Completed via the command line: ``$ sqlite3 -header -csv exercise01.sqlite < denormalize_census_data.sql > ./censusaur/db/import_data/denormalized_census_data_1996.csv``
   - Pursued automating the above using a Ruby file to call a series of sqlite3 dot commands via the command line, but preliminary searches indicate that's not possible.
 
-# NOTE: commands and files mentioned below are within the Rails project, Censusaur
+# NOTE: commands and files mentioned below are within the Rails project (Censusaur)
 
 3. Import the "flattened" table (or CSV file) and put it into a data structure for analysis.
   - Imported into Postgres using Ruby (using this import file ``censusaur/db/census_data_import.rb``).
     - Postgres has much better documentation and querying interfaces than those found for SQLite3.
     - Given the temporary nature of this app, to avoid secrets, environment variables, etc, the database username was set to ``maebeale`` in the database.yml
-  - Database can (almost!) be set up via: ``$ rake db:rebuild_with_csv_data``. This does NOT import the csv...
+  - Database can (almost!) be set up via: ``$ rake db:rebuild_with_csv_data``. This is NOT currently importing the csv...
     - Import was first done using ActiveRecord, but was too slow, so switched to SQL insert statements
     - Records are imported in batches (no jobs were created, but it still seemed helpful to the system to have breakpoints, and also provided the opportunity to (manually) test the import and charts against a small dataset.)
     - The (not idempotent) importer can be independently run via its own rake task:  ``$ rake db:import_census_data[100,500]``
