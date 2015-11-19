@@ -1,0 +1,113 @@
+<!--# TODO - remove inline styling-->
+<div class="col-md-3 table table-hover table-condensed table-responsive" style="padding-top: 3em;">
+  <table class="table table-hover table-condensed table-responsive">
+    <div class="stats-header-center">
+      <caption>Census by <strong>Sex</strong> and <strong>Education</strong> and <strong>Salary</strong></caption>
+    </div>
+    <tbody>
+    <% @census_by_sex_and_education_and_salary.group_by{ |g| g[2] }.each do |sex, education_and_salary_data | %>
+      <tr>
+        <th colspan="3" class="stats-header-center"><%= sex.upcase %></th>
+      </tr>
+      <% education_and_salary_data.group_by{|g| g[0]}.each do | over_50k, salary_by_education_row | %>
+        <tr>
+          <th colspan="3" class="stats-header-center black">
+            <!--Show salary level and count per boolean option of over_50k-->
+            <%= "#{over_50k == true ? "Over 50k/yr" : "Less than 50k/yr" }
+              (#{ salary_by_education_row.map{|i| i[3].to_i}.reduce(0, :+) })"
+            %></th>
+          <tr>
+            <th class="stats-subheader-center"><%= CensusData.human_attribute_name(:education_level) %></th>
+            <th class="stats-subheader-center"><%= "Total" %></th>
+            <% salary_by_education_row.each do | education_and_totals | %>
+              <% education_level = education_and_totals[1] %>
+              <% total = education_and_totals[3] %>
+              </tr>
+          <tr>
+            <td><%= "#{ strip_hyphens(education_level) }" %></td>
+            <td><%= total %></td>
+          </tr>
+        <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    <% end %>
+    </table>
+</div>
+
+<div class="col-md-3 table table-hover table-condensed table-responsive">
+  <table class="table table-striped table-hover table-condensed table-responsive">
+    <div class="stats-header-center">
+      <caption>Census by <strong>Country</strong> and <strong>Sex</strong> and <strong>Education</strong> and <strong>Salary</strong></caption>
+    </div>
+    <tbody>
+    <% @census_by_country_and_sex_and_education_and_salary.group_by{ |g| g[0] }.each do |country, sex_education_and_salary_data | %>
+      <tr>
+        <th colspan="3" class="stats-header-center"><%= country.upcase %></th>
+      </tr>
+      <% sex_education_and_salary_data.group_by{|g| g[3]}.each do | sex, salary_by_education_row | %>
+        <tr>
+          <th colspan="3" class="stats-header-center"><%= sex.upcase %></th>
+        </tr>
+        <% salary_by_education_row.group_by{|g| g[1]}.each do | over_50k, salary_by_education_row | %>
+          <th colspan="3" class="stats-header-center black">
+            <!--Show salary level and count per boolean option of over_50k-->
+            <%= "#{over_50k == true ? "Over 50k/yr" : "Less than 50k/yr" }
+              (#{ salary_by_education_row.map{|i| i[4].to_i}.reduce(0, :+) })"
+            %></th>
+        <tr>
+          <th class="stats-subheader-center"><%= CensusData.human_attribute_name(:education_level) %></th>
+          <th class="stats-subheader-center"><%= "Total" %></th>
+          <% salary_by_education_row.each do | education_and_totals | %>
+            <% education_level = education_and_totals[2] %>
+            <% total = education_and_totals[4] %>
+            </tr>
+            <tr>
+              <td><%= "#{ strip_hyphens(education_level) }" %></td>
+              <td><%= total %></td>
+            </tr>
+          <% end %>
+          </tr>
+        <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    <% end %>
+    </table>
+</div>
+
+<div class="col-md-3 table table-hover table-condensed table-responsive">
+  <table class="table table-striped table-hover table-condensed table-responsive">
+    <div class="stats-header-center">
+      <caption>Census by <strong>Country</strong> and <strong>Sex</strong> and <strong>Education</strong> and <strong>Salary</strong></caption>
+    </div>
+    <tbody>
+    <% @census_by_country_and_sex_and_education_and_salary.group_by{ |g| g[0] }.each do |country, sex_education_and_salary_data | %>
+      <tr>
+        <th colspan="3" class="stats-header-center"><%= country.upcase %></th>
+      </tr>
+      <% sex_education_and_salary_data.group_by{|g| g[3]}.each do | sex, salary_by_education_row | %>
+        <tr>
+          <th colspan="3" class="stats-header-center"><%= sex.upcase %></th>
+        </tr>
+        <% salary_by_education_row.group_by{|g| g[1]}.each do | over_50k, salary_by_education_row | %>
+          <tr>
+            <th class="stats-subheader-center"><%= CensusData.human_attribute_name(:education_level) %></th>
+            <th class="stats-subheader-center"><%= "Total" %></th>
+            <% salary_by_education_row.each do | education_and_totals | %>
+              <% education_level = education_and_totals[2] %>
+              <% total = education_and_totals[4] %>
+              </tr>
+              <tr>
+                <td><%= "#{ strip_hyphens(education_level) }" %></td>
+                <td><%= total %></td>
+              </tr>
+            <% end %>
+            </tr>
+        <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    <% end %>
+    </table>
+</div>

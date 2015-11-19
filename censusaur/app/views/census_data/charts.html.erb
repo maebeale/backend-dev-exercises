@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+  <div class="panel-heading table-style">
+    <h1>U.S. Census Data, 1996</h1>
+    <p><em><%= "n = " + @census_data.count.to_s %></em></p>
+  </div>
+  <div class="panel-heading panel-default table-style">
+    <%= render partial: "charts" %>
+    <%= render partial: "summary_tables" %><!--#TODO - make summary tables less linear
+    <%#= render partial: "google_chart" %><!--WIP: https://jsfiddle.net/maebeale/x4g94ks7/  #TODO - get these data correctly grouped by country -->
+  </div>
+</div>

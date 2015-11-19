@@ -1,0 +1,23 @@
+<%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+<div class="panel-body">
+  <h5><%= "Census Data by " + CensusData.human_attribute_name(:country).titleize %></h5>
+  <%= "n = " + @census_data.count.to_s %>
+  <%= geo_chart @census_data.group(:country).count %>
+</div>
+<br>
+<div class="panel-body">
+  <h5><%= "Census Data by " + CensusData.human_attribute_name(:workclass).titleize + " and by " + CensusData.human_attribute_name(:sex).titleize %></h5>
+  <%= "n = " + @census_data.count.to_s %>
+  <%= bar_chart @census_data.group(:sex).group(:workclass).count, library: {isStacked: true}
+  %>
+</div>
+<br>
+<div class="panel-body">
+  <h5><%= "Census Data by " +
+              CensusData.human_attribute_name(:race).titleize + " per " +
+              CensusData.human_attribute_name(:workclass).titleize %></h5>
+  <%= "n = " + @census_data.count.to_s %>
+  <%= line_chart   @census_data.pluck(:workclass).uniq.
+                       map { |c| { name: c,
+                                   data: @census_data.where(workclass: c).group(:race).count }  }, discrete: true %>
+</div>

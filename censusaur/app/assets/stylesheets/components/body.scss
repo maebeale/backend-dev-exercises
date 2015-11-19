@@ -1,0 +1,24 @@
+body, #menu {
+  font-size: 1.25em;
+  font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
+  text-align: center;
+  padding: 2em;
+}
+
+body {
+  .panel-default {
+    background-color: #F7F7F7;
+  }
+
+  .table {
+    .thead {
+      text-align: center;
+    }
+  }
+
+  .button, button {
+    font-weight: normal;
+  }
+
+  background-color: #a1a1a1;
+}

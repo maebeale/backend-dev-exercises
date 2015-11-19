@@ -1,0 +1,9 @@
+<div class="panel panel-default">
+  <div class="panel-heading table-style">
+    <h1>U.S. Census Data, 1996</h1>
+    <p><em><%= "n = " + @census_data.count.to_s %></em></p>
+  </div>
+  <div class="panel-heading panel-default table-style">
+  <%= render partial: "table" %>
+  </div>
+</div>

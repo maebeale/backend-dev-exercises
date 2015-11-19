@@ -1,59 +1,69 @@
-## RTI CDS Backend Developer Exercise 01
+## RTI CDS Backend Developer Exercise 01 (annotated)
 
-Welcome to Exercise 01. This exercise provides a small SQLite database with some data derived from the 1996 US Census and a few questions related to working with SQL and open source analysis packages.
+Thank you for the opportunity to complete Exercise 01.
 
-----
-
-### Some guidance
-
-1. Use open source languages and tools, such as Python, R, Ruby, or Java.
-2. Fork this repository to your personal GitHub account and clone the fork to your computer.
-3. Save and commit your answers to your fork of the repository, and push them back to your personal GitHub account. You can then provide a link to that fork of the repository if you need to show a code example.
-4. Use the Internet as a resource to help you complete your work. We do it all the time.
-5. Comment your code so that when you look back at it in a year, you'll remember what you were doing.
-6. There are many ways to approach and solve the problems presented in this exercise.
-7. Have fun!
-
-Google will point you to popular libraries for connecting to SQLite databases from Python, R, etc.
+Notes re each task are below. I look forward to meeting with you!
 
 ----
 
 ### The Task
 
-There are many things you can do with this dataset. Here are a few structured tasks to attempt:
-
 0. Read the section below about **The Data**.
-1. Write a SQL query that creates a consolidated dataset from the normalized tables in the database. In other words, write a SQL query that "flattens" the database to a single table.
+  - Thanks for the explicit explanation of each field!
+
+1. Write a SQL query that creates a consolidated dataset from the normalized tables in the database.
+  - SQL Query: ``denormalize_census_data.sql``
+  - Pursued a dynamic SQL option (via ``sqlite_master`` or ``PRAGMA table_info``) to take any number of columns,
+  provided they followed the naming convention and had a matched (pluralized) table in the same db.
+  Wasn't able to find, but this was fun to consider!
+
 2. Export the "flattened" table to a CSV file.
-3. Import the "flattened" table (or CSV file) into your programming language of choice (R, Python, Java, etc.) and put it into a data structure for analysis.
+  - Completed via the command line: ``$ sqlite3 -header -csv exercise01.sqlite < denormalize_census_data.sql > ./censusaur/db/import_data/denormalized_census_data_1996.csv``
+  - Pursued automating the above using a Ruby file to call a series of sqlite3 dot commands via the command line, but preliminary searches indicate that's not possible.
+
+3. Import the "flattened" table (or CSV file) and put it into a data structure for analysis.
+  - Imported into Postgres using Ruby (``censusaur/db/census_data_import.rb``). 
+    - Postgres has much better documentation and querying interfaces than those found for SQLite3.
+    - Given the temporary nature of this app, to avoid secrets, environment variables, etc, the database username was set to ``maebeale`` in the database.yml
+  - Database can be set up and populated via: ``$ rake db:rebuild_with_csv_data``.
+    - Import was first done using ActiveRecord, but was too slow, so switched to SQL insert statements
+    - Records are imported in batches (no jobs were created, but it still seemed helpful to the system to have breakpoints, and also provided the opportunity to (manually) test the import and charts against a small dataset.)
+    - The (not idempotent) importer can be independently run via its own rake task:  ``$ rake db:import_census_data``
+      - The import_census_data rake task takes two (optional) arguments: number of rows per batch, and number of batches
+  - Got ipython notebook installed (along w python, etc -- first via homebrew, and then via anaconda), thinking it'd be an appropriate "data structure for analysis," but then doubled-back to Ruby on Rails given familiarity and time constraints.
+
 4. Perform some simple exploratory analysis and generate summary statistics to get a sense of what is in the data.
+  - Used pgAdminIII to perform simple queries.
+  - Some findings:
+    - Americans largely are native to the U.S. -- approximately 90%. The next highest native country (Mexico) represents only 2% of the population.
+    - Men in the United States are more than 5 times more likely to make more than 50k/year than their female counterparts.
+    - Most adults in the U.S. are employed in the private sector, with men making up the majority of the quantity and diversity of the workforce. Almost no one has worked without pay or never worked, though a segment of the population whose employment data remains unknown could reveal higher numbers with negligible work history.
+    - The American private sector is predominately white.
+  - Potential questions:
+    - Do people who earn less work more hours, or do the extra hours move people over 50k mark?
+    - Can one's maximum education level predict average number of hours worked per week as an adult?
+    - In which fields is a master's degree required to make more than 50k/year?
+    - Do smaller subsets of the population (e.g. Amer Indian Eskimo, people native to another country), tend to have more similar relationship and employment situations?
+    - Does higher education offer women more employment opportunities and/or earning potential than for men in the U.S.?
+    - Which groups tend to have capital losses?
+    - And plenty more!
+
 5. Create a simple web application that shows your analysis.
+  - Created a simple, two-page app to show (formatted) imported data and a few simplistic charts
+
 6. Create a paginated view of the data in your web application.
+  - Gems used: 'twitter-bootstrap-rails', 'will_paginate-bootstrap'
+  - Tried to show charts below the table to draw only from paginated data.
+
 7. Generate one or more charts that you feel convey important relationships in the data.
+  - Gem used: 'chartkick', and a [Google Combo Chart](https://developers.google.com/chart/interactive/docs/gallery/combochart)
+  - Without experience in data analytics or data vizualization, multiple series analysis/charts were a stretch. Found some [awesome examples](http://individual.utoronto.ca/zabet/census-income.html) out there, but given time constraints was not able to reproduce.
+  - Data for the Google chart was handrolled -- this absolutely could be done more programmatically!
 
 ----
 
 ### The Data
 
-This repository contains a file called `exercise01.sqlite`. It is a normalized relational [SQLite database](http://www.sqlite.org). 
-
-It contains a table, named `records`, that has 48842 US Census records with the following fields:
-
-- `id`: a unique id number for each record
-- `age`: a continuous variable representing an individual's age
-- `workclass_id`: foreign key to the `workclasses` table, representing the broad class of occupation of an individual
-- `education_level_id`: foreign key to the `education_levels` table, representing the highest level of education an individual received
-- `education_num`: a continuous variable representing an individual's current education level
-- `marital_status_id`: foreign key to the `marital_statuses` table, representing an individual's marital status
-- `occupation_id`: foreign key to the `occupations` table, representing an individual's occupation
-- `race_id`: foreign key to the `races` table, representing an individual's race
-- `sex_id`: foreign key to the `sexes` table, representing an individual's sex
-- `capital_gain`: a continuous variable representing post-social insurance income, in the form of capital gains.
-- `capital_loss`: a continuous variable representing post-social insurance losses, in the form of capital losses.
-- `hours_week`: a continuous variable representing the number of hours per week an individual worked.
-- `country_id`: foreign key to the `countries` table, representing an individual's native country
-- `over_50k`: a boolean variable representing whether the individual makes over $50,000/year. A value of 1 means that the person makes greater than $50,000/year and a value of 0 means that the person makes less than or equal to $50,000/year.
-
-Inspection of the database will reveal the reference tables and the values that they contain, referenced by the foreign keys in the categorical fields of the `records` table. Basically, anywhere you see a field name above that ends with `_id`, there is a corresponding table in the database that contains the values associated with that categorical variable. Fields that contain continuous values, such as `age`, do not join to other tables.
-
-Some of the reference tables have an entry for a question mark `?` that represents missing data in `records`.
+- Questions:
+  - Given that some fields were designated continuous variables, but the dataset only included discrete values, should I have used the float datatype?
+  - My first instinct was to strip out the "?" values, but are those left in (or inserted) when data warehousing to avoid issues related to null values?

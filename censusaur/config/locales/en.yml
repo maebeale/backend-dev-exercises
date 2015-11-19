@@ -1,0 +1,11 @@
+en:
+  activerecord:
+    attributes:
+      census_data:
+        country: Native country
+        education_num: Education level
+        over_50k: Income > 50k
+        relationship: Relationship status
+        report_id: ID
+        workclass: Occupation type
+
